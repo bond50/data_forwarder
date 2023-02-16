@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -69,6 +70,7 @@ app.post('/ngrok', (req, res) => {
     });
 });
 
+
 app.post('/callback', (req, res) => {
   // Get the ngrok URL from the database
   Ngrok.findOne()
@@ -76,6 +78,14 @@ app.post('/callback', (req, res) => {
       if (!ngrok) {
         throw new Error('Cannot post to that url');
       }
+
+      // Verify the signature
+      const { Authorization, 'x-mpesa-signature': signature } = req.headers;
+      const signatureIsValid = verifySignature(Authorization, signature, process.env.SAFARICOM_CONSUMER_SECRET);
+      if (!signatureIsValid) {
+        throw new Error('Invalid signature');
+      }
+
       // Forward the POST request to the ngrok endpoint
       const url = ngrok.url;
       axios.post(url, req.body)
@@ -94,9 +104,12 @@ app.post('/callback', (req, res) => {
     });
 });
 
+function verifySignature(authorization, signature, consumerSecret) {
+  const hash = crypto
+    .createHmac('sha1', consumerSecret)
+    .update(authorization)
+    .digest('base64');
 
-// Start the server
-const port = process.env.Port || 9000;
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+  return hash === signature;
+}
+
