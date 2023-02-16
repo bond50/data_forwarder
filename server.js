@@ -40,7 +40,7 @@ mongoose.connect(process.env.DATABASE_URL, options)
 
 // Define a schema for storing the ngrok URL
 const ngrokSchema = new mongoose.Schema({
-  url: { type: String, required: true }
+  url: { type: String, required: true, minlength: 1 }
 });
 
 // Handle GET requests to the homepage
@@ -54,12 +54,17 @@ const Ngrok = mongoose.model('Ngrok', ngrokSchema);
 // Create a new ngrok URL
 app.post('/ngrok', (req, res) => {
   const url = req.body.url;
+  if (!url) {
+    return res.render('save_failed', { error: 'URL is required' });
+  }
   Ngrok.findOneAndReplace({}, { url }, { upsert: true })
     .then(() => {
+        console.log('Save')
       res.render('save_ngrok', { success: 'Ngrok URL saved' });
     })
     .catch(err => {
       console.error(err);
+        console.log('not')
       res.render('save_failed', { error: 'Error saving ngrok URL' });
     });
 });
