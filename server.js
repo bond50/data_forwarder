@@ -96,12 +96,12 @@ app.post('/callback', (req, res) => {
         })
         .catch(error => {
           console.error(`Error forwarding request to ${url}: ${error.message}`);
-          res.status(500).send('Error forwarding request');
+          res.status(500).send('Error forwarding request to kufu');
         });
     })
     .catch(err => {
       console.error(err);
-      res.status(500).send('Error getting ngrok URL');
+      res.status(500).send('Error');
     });
 });
 
