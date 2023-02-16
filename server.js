@@ -113,3 +113,8 @@ function verifySignature(authorization, signature, consumerSecret) {
   return hash === signature;
 }
 
+// Start the server
+const port = process.env.PORT || 9000;
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
