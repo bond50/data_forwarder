@@ -79,12 +79,12 @@ app.post('/callback', (req, res) => {
         throw new Error('Cannot post to that url');
       }
 
-      // Verify the signature
-      const { Authorization, 'x-mpesa-signature': signature } = req.headers;
-      const signatureIsValid = verifySignature(Authorization, signature, process.env.SAFARICOM_CONSUMER_SECRET);
-      if (!signatureIsValid) {
-        throw new Error('Invalid signature');
-      }
+      // // Verify the signature
+      // const { Authorization, 'x-mpesa-signature': signature } = req.headers;
+      // const signatureIsValid = verifySignature(Authorization, signature, process.env.SAFARICOM_CONSUMER_SECRET);
+      // if (!signatureIsValid) {
+      //   throw new Error('Invalid signature');
+      // }
 
       // Forward the POST request to the ngrok endpoint
       const url = ngrok.url;
